@@ -1,0 +1,14 @@
+{
+  "name": "spiders",
+  "version": "1.0.0",
+  "description": "Spiders",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joe Pfeiffer",
+  "license": "ISC",
+  "dependencies": {
+    "terminal-kit": "^1.13.10"
+  }
+}
