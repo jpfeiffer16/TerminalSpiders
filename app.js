@@ -24,14 +24,22 @@ function setupBackground() {
 function setupSpiders() {
   //Setup Spider Buffers
   let files = fs.readdirSync('./spiders');
+  // files.forEach(file => 
+  //   spiderBuffers.push(
+  //     ScreenBuffer.createFromString(
+  //       {},
+  //       fs.readFileSync(
+  //         path.join('./spiders', file),
+  //         'utf-8'
+  //       )
+  //     )
+  //   )
+  // );
   files.forEach(file => 
     spiderBuffers.push(
-      ScreenBuffer.createFromString(
-        {},
-        fs.readFileSync(
-          path.join('./spiders', file),
-          'utf-8'
-        )
+      fs.readFileSync(
+        path.join('./spiders', file),
+        'utf-8'
       )
     )
   );
@@ -40,11 +48,35 @@ function setupSpiders() {
     // let min = 0;
     // let max = process.settings.responseCodes.length - 1;
     // let randomIndex =  Math.floor(Math.random() * (max - min + 1) + min);
-    spiders.push({
+    // Math.floor(Math.random() * (max - min + 1) + min);
+    let thisSpider = {
       speed: Math.floor(Math.random() * (3 - 1 + 1) + 1),
-      buff: spiderBuffers[Math.floor(Math.random() * (spiderBuffers.length - 1 - 0 + 1) + 0)],
-      x: Math.floor(Math.random() * (viewport.width - 0 + 1) + 0)
+      buff: ScreenBuffer.createFromString(
+        {},
+        spiderBuffers[Math.floor(Math.random() * (spiderBuffers.length - 1 - 0 + 1) + 0)],
+      ),
+      x: 0,
+      y: 0
+    };
+    Object.defineProperty(thisSpider, 'x', {
+      get() {
+        return thisSpider.buff.x;
+      },
+      set(value) {
+        thisSpider.buff.x = value;
+      }
     });
+    Object.defineProperty(thisSpider, 'y', {
+      get() {
+        return thisSpider.buff.y;
+      },
+      set(value) {
+        thisSpider.buff.y = value;
+      }
+    });
+    thisSpider.x =  Math.floor(Math.random() * (viewport.width - 0 + 1) + 0);
+
+    spiders.push(thisSpider);
   }
 
 }
@@ -53,11 +85,13 @@ function setupSpiders() {
 
 function draw()
 {
-	background.draw( { dst: viewport , tile: true } ) ;
+  // console.log('Drawing');
+
+	background.draw({ dst: viewport , tile: true });
+  spiders.forEach(spider => spider.buff.draw({ dst: viewport , tile: false }));
 	var stats = viewport.draw() ;
   
   
-  spiders.forEach(spider => spider.buff.draw);
 
 	// term.moveTo.eraseLine.bgWhite.green( 1 , 1 ,
 	// 	'Arrow keys: move the ship - Q/Ctrl-C: Quit - Redraw stats: %d cells, %d moves, %d attrs, %d writes\n' ,
@@ -78,8 +112,8 @@ function init( callback )
     viewport = ScreenBuffer.create({
       dst: term ,
       width: Math.min(term.width),
-      height: Math.min(term.height - 1),
-      y: 2
+      height: Math.min(term.height),
+      y: 1
     });
     
     
@@ -90,6 +124,12 @@ function init( callback )
     term.on( 'key' , inputs ) ;
     callback() ;
   } ) ;
+}
+
+function update() {
+  spiders.forEach(spider => {
+    spider.y += spider.speed / 30;
+  });
 }
 
 function terminate()
@@ -118,6 +158,7 @@ function inputs(key)
 
 function animate() {
   draw();
+  update();
   setTimeout(animate, 50);
 }
 
@@ -126,10 +167,15 @@ init(() => {
   setupBackground();
   setupSpiders();
   animate();
+
+  //TEMP
+  spiders.forEach((spider, index) => {
+    spider.x = index
+  });
   fs.writeFileSync('./test.txt',
     // JSON.stringify(spiders)
     spiders
-      .map(spider => JSON.stringify(spider.buff))
+      .map(spider => spider.x)
       .join('\n')
   );
 });
