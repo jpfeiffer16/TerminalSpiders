@@ -15,7 +15,7 @@ function setupBackground() {
   background = ScreenBuffer.create( {
     width: viewport.width ,
     height: viewport.height ,
-    noFill: true
+    noFill: false
   });
   
   background.fill( { attr: { color: 'white' , bgColor: 'black' } } ) ;
@@ -44,7 +44,7 @@ function setupSpiders() {
     )
   );
   //Setup Spiders
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 2; i++) {
     // let min = 0;
     // let max = process.settings.responseCodes.length - 1;
     // let randomIndex =  Math.floor(Math.random() * (max - min + 1) + min);
@@ -52,7 +52,9 @@ function setupSpiders() {
     let thisSpider = {
       speed: Math.floor(Math.random() * (3 - 1 + 1) + 1),
       buff: ScreenBuffer.createFromString(
-        {},
+        {
+          transparencyChar: ' '
+        },
         spiderBuffers[Math.floor(Math.random() * (spiderBuffers.length - 1 - 0 + 1) + 0)],
       ),
       x: 0,
@@ -74,7 +76,7 @@ function setupSpiders() {
         thisSpider.buff.y = value;
       }
     });
-    thisSpider.x =  Math.floor(Math.random() * (viewport.width - 0 + 1) + 0);
+    thisSpider.x =  Math.floor(Math.random() * (viewport.width - 0 + 1)) + 0;
 
     spiders.push(thisSpider);
   }
@@ -86,8 +88,8 @@ function setupSpiders() {
 function draw()
 {
   // console.log('Drawing');
-
-	background.draw({ dst: viewport , tile: true });
+  viewport.clear
+  background.draw({ dst: viewport , tile: true });
   spiders.forEach(spider => spider.buff.draw({ dst: viewport , tile: false }));
 	var stats = viewport.draw() ;
   
@@ -169,13 +171,17 @@ init(() => {
   animate();
 
   //TEMP
-  spiders.forEach((spider, index) => {
-    spider.x = index
-  });
-  fs.writeFileSync('./test.txt',
-    // JSON.stringify(spiders)
-    spiders
-      .map(spider => spider.x)
-      .join('\n')
-  );
+  // spiders.forEach((spider, index) => {
+  //   spider.x = index
+  // });
+  // fs.writeFileSync('./test.txt',
+  //   // JSON.stringify(spiders)
+  //   spiders
+  //     .map(spider => spider.x)
+  //     .join('\n')
+  // );
+  // fs.writeFileSync('./test.txt',
+  //   // JSON.stringify(spiders)
+  //   viewport.width
+  // );
 });
